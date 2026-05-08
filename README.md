@@ -275,12 +275,14 @@ Before running this project, ensure the following requirements are met:
   - This is required because in this case Terraform uses this tag to locate the correct ACM certificate via a data source lookup
 
 
-## (Part 1) Create file with secret variables
+## (Part 1) Create secret
 
-1. In folder `IAC-Terraform/` create file `terraform.tfvars`:
+In AWS Secrets Manager create secret  `made-by-me-postgres-db-admin-creds`
+with type `Other type of secret` and provide with following Key/Value, for example:
+
 ``` bash
-db_username = "postgres"
-db_password = "postgres12345"
+POSTGRES_USER : grant_postgres
+POSTGRES_PASSWORD : postgres12345
 ```
 
 there are credentials for AWS PostgreSQL RDS

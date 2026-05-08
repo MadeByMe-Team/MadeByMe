@@ -16,6 +16,13 @@ provider "aws" {
 }
 
 
+locals {
+  postgres_creds = jsondecode(
+    data.aws_secretsmanager_secret_version.postgres_db.secret_string
+  )
+}
+
+
 module "vpc" {
   source = "./modules/vpc"
 
@@ -93,8 +100,8 @@ module "rds" {
   db_sg_id                = module.sg.security_group_ids["db_sg"]
 
   db_name                 = var.db_name
-  db_username             = var.db_username
-  db_password             = var.db_password
+  db_username             = local.postgres_creds.POSTGRES_USER
+  db_password             = local.postgres_creds.POSTGRES_PASSWORD
 }
 
 
@@ -117,7 +124,7 @@ module "ecs" {
   app_task_resources              = "medium"
   database_id                     = module.rds.database_id
 
-  app_default_connection_string   = "Host=${module.rds.database_dns};Port=5432;Database=${var.db_name};Username=${var.db_username};Password=${var.db_password};"
+  app_default_connection_string   = "Host=${module.rds.database_dns};Port=5432;Database=${var.db_name};Username=${local.postgres_creds.POSTGRES_USER};Password=${local.postgres_creds.POSTGRES_PASSWORD};"
 }
 
 

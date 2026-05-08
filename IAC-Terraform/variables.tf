@@ -57,7 +57,7 @@ variable "alb_listener_https_port" {
 variable "app_container_image" {
   description = "App service container image with tag version"
   type        = string
-  default     = "971778147356.dkr.ecr.us-east-1.amazonaws.com/made-by-me-app:3.0"
+  default     = "971778147356.dkr.ecr.us-east-1.amazonaws.com/made-by-me-app:4.0"
 }
 
 
@@ -68,13 +68,11 @@ variable "db_name" {
 }
 
 
-variable "db_username" {
-  type        = string
-  description = "Database username"
+data "aws_secretsmanager_secret" "postgres_db" {
+  name = "made-by-me-postgres-db-admin-creds"
 }
 
 
-variable "db_password" {
-  type        = string
-  description = "Data base user password"
+data "aws_secretsmanager_secret_version" "postgres_db" {
+  secret_id = data.aws_secretsmanager_secret.postgres_db.id
 }
