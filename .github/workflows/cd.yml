@@ -1,24 +1,25 @@
 name: "Infrastructure: CD (Terraform)"
 
 on:
-  push:
-    branches: [ "main" ]
-    paths: [ "IAC-Terraform/**" ]
-
   pull_request:
-    branches: [ "main" ]
-    paths: [ "IAC-Terraform/**" ]
+    branches:
+      - main
+    paths:
+      - "IAC-Terraform/**"
+
+  push:
+    branches:
+      - main
 
 permissions:
-  id-token: write 
-  contents: read  
-
+  id-token: write
+  contents: read
 
 jobs:
 
   plan:
-
     name: "Terraform: Init & Plan"
+
     if: github.event_name == 'pull_request'
 
     runs-on: ubuntu-latest
@@ -51,13 +52,18 @@ jobs:
 
 
   apply:
-
     name: "Terraform: Apply"
-    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
 
     runs-on: ubuntu-latest
     environment: production
+    runs-on: ubuntu-latest
+    environment: production
 
+    defaults:
+      run:
+        working-directory: ./IAC-Terraform
     defaults:
       run:
         working-directory: ./IAC-Terraform
@@ -65,7 +71,12 @@ jobs:
     steps:
       - name: "Checkout Code"
         uses: actions/checkout@v4
+    steps:
+      - name: "Checkout Code"
+        uses: actions/checkout@v4
 
+      - name: "Setup Terraform"
+        uses: hashicorp/setup-terraform@v3
       - name: "Setup Terraform"
         uses: hashicorp/setup-terraform@v3
 
@@ -74,9 +85,19 @@ jobs:
         with:
           role-to-assume: arn:aws:iam::971778147356:role/GitHubActionsTerraformRole
           aws-region: us-east-1
+      - name: "AWS Auth (OIDC)"
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: arn:aws:iam::971778147356:role/GitHubActionsTerraformRole
+          aws-region: us-east-1
 
       - name: "Terraform: Init"
         run: terraform init
+      - name: "Terraform: Init"
+        run: terraform init
+
+      - name: "Terraform: Validate"
+        run: terraform validate
 
       - name: "Terraform: Apply"
         run: terraform apply -auto-approve

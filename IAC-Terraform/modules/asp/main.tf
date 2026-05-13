@@ -54,3 +54,4 @@ resource "aws_appautoscaling_policy" "app_memory_scaling" {
     scale_out_cooldown = 60
   }
 }
+

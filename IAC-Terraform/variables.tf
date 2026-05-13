@@ -76,3 +76,4 @@ data "aws_secretsmanager_secret" "postgres_db" {
 data "aws_secretsmanager_secret_version" "postgres_db" {
   secret_id = data.aws_secretsmanager_secret.postgres_db.id
 }
+
