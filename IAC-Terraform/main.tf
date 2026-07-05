@@ -95,13 +95,28 @@ module "iam" {
 
 
 module "rds" {
-  source                  = "./modules/rds"
-  private_subnet_db_ids   = module.vpc.private_db_subnet_ids
-  db_sg_id                = module.sg.security_group_ids["db_sg"]
+  source             = "./modules/rds"
 
+  name                    = "mbm"
   db_name                 = var.db_name
   db_username             = local.postgres_creds.POSTGRES_USER
   db_password             = local.postgres_creds.POSTGRES_PASSWORD
+
+  subnet_ids              = module.vpc.private_db_subnet_ids
+  security_group_ids      = [module.sg.security_group_ids["db_sg"]]
+
+  instances = [
+    {
+      instance_class = "db.t4g.medium"
+      count          = 1
+      is_writer      = true
+    },
+    # {
+    #   instance_class = "db.t4g.medium"
+    #   count          = 1
+    #   is_writer      = false
+    # }
+  ]
 }
 
 
@@ -122,9 +137,9 @@ module "ecs" {
 
   task_resource_sizes             = var.task_sizes
   app_task_resources              = "medium"
-  database_id                     = module.rds.database_id
+  database_id                     = module.rds.endpoint_id
 
-  db_host                         = module.rds.database_dns
+  db_host                         = module.rds.endpoint
   db_name                         = var.db_name
   db_secret_creds_arn             = data.aws_secretsmanager_secret.postgres_db.arn
 }

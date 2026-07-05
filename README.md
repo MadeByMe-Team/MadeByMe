@@ -265,10 +265,12 @@ Before running this project, ensure the following requirements are met:
       - You can create a new S3 bucket if needed
       - It is recommended to create it in the same region where the application is deployed
       - Then update the bucket field in the Terraform backend configuration accordingly
-
+      
+### (Important) 
 - A Route53 domain is configured (used for accessing the application via a custom domain):
   - `trainee-keycloack.store`
 
+### (Important) 
 - HTTPS certificate is already set up (manually or via IaC in AWS Certificate Manager):
   - The certificate is issued and valid for `trainee-keycloack.store`
   - The certificate must include the following tag:
