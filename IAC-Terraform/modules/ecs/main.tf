@@ -75,7 +75,7 @@ resource "aws_ecs_service" "app_service" {
   task_definition         = aws_ecs_task_definition.app_task.arn
   launch_type             = "FARGATE"
   enable_execute_command  = true
-  desired_count           = 1
+  desired_count           = 2
 
   network_configuration {
     subnets          = var.public_subnet_ids
